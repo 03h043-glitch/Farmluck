@@ -4,14 +4,18 @@ The addon ships with a small local data set because WoW Classic addons cannot pe
 
 The starter farms were sourced from public WoW Classic pages and comments on June 30, 2026. Drop rates are treated as editable estimates because Classic Era, Season of Discovery, Anniversary, private databases, and live uploaded samples can differ.
 
-Most added farms include a `sourceUrls` entry pointing to the relevant Wowhead Classic item page. Farms added through the shared helper default to `https://www.wowhead.com/classic/item=<itemId>`.
+Most added farms include a `sourceUrls` entry pointing to the relevant Wowhead Classic item page. Farms added through the shared helpers default to `https://www.wowhead.com/classic/item=<itemId>`.
 
 ## Sources Used
 
 - Big-mouth Clam: https://www.wowhead.com/classic/item=7973/big-mouth-clam
+- Thick-shelled Clam: https://www.wowhead.com/classic/item=5524/thick-shelled-clam
+- Small Barnacled Clam: https://classicdb.ch/?item=5523
 - Golden Pearl: https://www.wowhead.com/classic/item=13926/golden-pearl
 - Black Pearl: https://www.wowhead.com/classic/item=7971/black-pearl
 - Iridescent Pearl: https://www.wowhead.com/classic/item=5500/iridescent-pearl
+- Small Lustrous Pearl: https://www.wowhead.com/classic/item=5498/small-lustrous-pearl
+- Thick-shelled Clam level/source context: https://wowpedia.fandom.com/wiki/Thick-Shelled_Clam
 - Arcane Crystal: https://www.wowhead.com/classic/item=12363/arcane-crystal
 - Rich Thorium Vein: https://www.wowhead.com/classic/object=175404/rich-thorium-vein
 - Black Lotus: https://www.wowhead.com/classic/object=176589/black-lotus
@@ -32,7 +36,9 @@ Most added farms include a `sourceUrls` entry pointing to the relevant Wowhead C
 
 - Golden Pearl: Big-mouth Clam per kill defaults to 52%; Golden Pearl per Big-mouth Clam defaults to 0.509%.
 - Black Pearl: Big-mouth Clam per kill defaults to 52%; Black Pearl per Big-mouth Clam defaults to 4.05%.
-- Iridescent Pearl: Big-mouth Clam per kill defaults to 52%; Iridescent Pearl per Big-mouth Clam defaults to 2.57%.
+- Iridescent Pearl, level 20-32 route: Thick-shelled Clam per kill defaults to 42%; Iridescent Pearl per Thick-shelled Clam defaults to 2.57%.
+- Iridescent Pearl, level 40-60 route: Big-mouth Clam per kill defaults to 52%; Iridescent Pearl per Big-mouth Clam defaults to 3.00%.
+- Small Lustrous Pearl: Small Barnacled or Thick-shelled Clam per kill defaults to 42%; pearl per clam defaults to 5.0-5.5%.
 - Arcane Crystal: Rich Thorium tap defaults to 2.95%.
 - Felcloth: Satyr kill defaults to a conservative 4%.
 - Essence of Water: water elemental kill defaults to 4.5%.
@@ -41,6 +47,7 @@ Most added farms include a `sourceUrls` entry pointing to the relevant Wowhead C
 
 ## Expansion Coverage
 
+- Level-aware pearl farms: Small Barnacled Clam, Thick-shelled Clam, and Big-mouth Clam routes are separate farms so search can prefer the route closest to the player level.
 - Basic cloth: Linen Cloth, Wool Cloth, Silk Cloth, Mageweave Cloth, Runecloth, Felcloth, and Mooncloth.
 - Crafted/transmuted reagents: Arcanite Bar, Cured Rugged Hide, Refined Deeprock Salt, Enchanted Leather, and Enchanted Thorium Bar.
 - Elemental reagents: Elemental Fire/Earth/Air/Water, Heart of Fire, Core of Earth, Breath of Wind, Globe of Water, Essence of Fire/Air/Earth/Water/Undeath, and Living Essence.
