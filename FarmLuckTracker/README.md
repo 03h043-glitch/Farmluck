@@ -14,9 +14,10 @@ For another Classic client, use that client's `Interface/AddOns` folder and upda
 
 1. Open the addon with `/flt`.
 2. Search for an item, select a farm, set the target amount, adjust odds if your server/version uses different rates, then press `Begin`.
-3. Farm normally. Looted target items are tracked from loot chat. Mob kills are tracked from combat log `PARTY_KILL`. Mining taps and some skinning/herbalism attempts are tracked from successful profession casts. Clam openings are tracked when the Big-mouth Clam item is used.
-4. Use the manual `+` and `-` buttons if WoW misses an event, you join a group, or you want to backfill attempts.
-5. Press `End` to stop the session.
+3. Farm normally. Looted target items are tracked from your loot chat. Mob kills are tracked by pairing combat XP messages with `PLAYER_XP_UPDATE`, following the same high-confidence approach used by HardcoreLlama. Mining taps and some skinning/herbalism attempts are tracked from successful profession casts. Clam openings are tracked when the relevant clam item is used.
+4. Search results prefer farms near your current player level when level bands are known. For example, a level 31 search for Iridescent Pearl should prefer the Thick-shelled Clam route over the 40+ Big-mouth Clam route.
+5. Use the manual `+` and `-` buttons if WoW misses an event, you join a group, farm grey mobs that give no XP, or you want to backfill attempts.
+6. Press `End` to stop the session.
 
 ## Slash Commands
 
