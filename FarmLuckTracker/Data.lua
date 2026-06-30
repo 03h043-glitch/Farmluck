@@ -1,7 +1,16 @@
 local addonName, ns = ...
 
-ns.DataVersion = 2
+ns.DataVersion = 3
 ns.Farms = {}
+
+local LEVELS = {
+    ["linen-cloth"] = { 5, 16 }, ["wool-cloth"] = { 16, 29 }, ["silk-cloth"] = { 28, 40 }, ["mageweave-cloth"] = { 40, 50 }, ["runecloth"] = { 50, 60 }, ["felcloth"] = { 50, 60 },
+    ["spiders-silk"] = { 20, 30 }, ["thick-spiders-silk"] = { 35, 45 }, ["shadow-silk"] = { 40, 50 }, ["ironweb-spider-silk"] = { 55, 60 }, ["wildvine"] = { 30, 50 }, ["powerful-mojo"] = { 50, 60 },
+    ["elemental-fire"] = { 25, 56 }, ["elemental-earth"] = { 35, 58 }, ["elemental-air"] = { 28, 58 }, ["elemental-water"] = { 35, 60 }, ["heart-of-fire"] = { 45, 56 }, ["core-of-earth"] = { 35, 56 }, ["breath-of-wind"] = { 28, 58 }, ["globe-of-water"] = { 35, 60 },
+    ["essence-of-fire"] = { 50, 60 }, ["essence-of-air"] = { 50, 60 }, ["essence-of-earth"] = { 50, 60 }, ["essence-of-water"] = { 50, 60 }, ["living-essence"] = { 50, 60 }, ["essence-of-undeath"] = { 50, 60 },
+    ["small-flame-sac"] = { 20, 45 }, ["rugged-hide"] = { 50, 60 }, ["devilsaur-leather"] = { 54, 60 }, ["warbear-leather"] = { 50, 60 }, ["frostsaber-leather"] = { 55, 60 }, ["chimera-leather"] = { 50, 60 }, ["heavy-scorpid-scale"] = { 50, 60 },
+    ["arcane-crystal"] = { 55, 60 }, ["dark-iron-ore"] = { 48, 60 }, ["azerothian-diamond"] = { 50, 60 }, ["blue-sapphire"] = { 50, 60 }, ["huge-emerald"] = { 50, 60 }, ["large-opal"] = { 40, 60 }, ["star-ruby"] = { 35, 60 },
+}
 
 local function split(text, sep)
     local out, pattern = {}, "([^" .. (sep or ",") .. "]+)"
@@ -12,8 +21,19 @@ local function split(text, sep)
     return out
 end
 
-local function source(itemId)
-    return { "https://www.wowhead.com/classic/item=" .. tostring(itemId) }
+local function sources(...)
+    local out = {}
+    for i = 1, select("#", ...) do
+        local itemId = select(i, ...)
+        if itemId then table.insert(out, "https://www.wowhead.com/classic/item=" .. tostring(itemId)) end
+    end
+    return out
+end
+
+local function applyLevel(farm, minLevel, maxLevel, routeName)
+    local r = minLevel and { minLevel, maxLevel } or LEVELS[farm.key]
+    if r then farm.levelMin = r[1]; farm.levelMax = r[2] end
+    if routeName then farm.routeName = routeName end
 end
 
 local function add(key, name, itemId, aliases, kind, sourceLabel, button, targetLabel, chance, chanceLabel, locations, note, gather, deterministic)
@@ -31,15 +51,16 @@ local function add(key, name, itemId, aliases, kind, sourceLabel, button, target
         chanceLabel = chanceLabel,
         locations = split(locations, "|"),
         oddsNote = note,
-        sourceUrls = source(itemId),
+        sourceUrls = sources(itemId),
     }
     if gather then farm.gatherSpells = split(gather) end
     if deterministic then farm.deterministic = true end
+    applyLevel(farm)
     table.insert(ns.Farms, farm)
 end
 
-local function two(key, name, itemId, aliases, stage1Chance, stage2Chance, locations, note)
-    table.insert(ns.Farms, {
+local function twoClam(key, name, itemId, aliases, sourceItemId, sourceItemName, sourceLabel, stage1Chance, stage2Chance, minLevel, maxLevel, locations, note)
+    local farm = {
         key = key,
         name = name,
         itemId = itemId,
@@ -49,17 +70,27 @@ local function two(key, name, itemId, aliases, stage1Chance, stage2Chance, locat
         sourceLabel = "Kills",
         attemptButton = "+ Kill",
         targetLabel = "Items",
-        stage1 = { itemId = 7973, name = "Big-mouth Clam", label = "Clams", chance = stage1Chance, chanceLabel = "Clams / kill" },
-        stage2 = { itemId = itemId, name = name, label = "Items", sourceItemId = 7973, sourceItemName = "Big-mouth Clam", chance = stage2Chance, chanceLabel = name .. " / clam" },
+        stage1 = { itemId = sourceItemId, name = sourceItemName, label = sourceLabel, chance = stage1Chance, chanceLabel = sourceLabel .. " / kill" },
+        stage2 = { itemId = itemId, name = name, label = "Items", sourceItemId = sourceItemId, sourceItemName = sourceItemName, chance = stage2Chance, chanceLabel = name .. " / clam" },
         locations = split(locations, "|"),
         oddsNote = note,
-        sourceUrls = { "https://www.wowhead.com/classic/item=7973", "https://www.wowhead.com/classic/item=" .. tostring(itemId) },
-    })
+        sourceUrls = sources(sourceItemId, itemId),
+    }
+    applyLevel(farm, minLevel, maxLevel, sourceItemName)
+    table.insert(ns.Farms, farm)
 end
 
-two("golden-pearl", "Golden Pearl", 13926, "gold pearl,big mouth clam,big-mouth clam,clam pearl,pearl", 0.52, 0.00509, "Swamp of Sorrows - Marsh murloc packs along the eastern coast.|Azshara - coastal naga and fishing routes for Big-mouth Clams.|Tanaris / Feralas / Hinterlands - fish Big-mouth Clams while moving between pools.", "Defaults use a high-clam mob route and Wowhead Classic container samples.")
-two("black-pearl", "Black Pearl", 7971, "big mouth clam,big-mouth clam,clam pearl,pearl", 0.52, 0.0405, "Swamp of Sorrows - Marsh murlocs for high Big-mouth Clam volume.|Azshara - coastal mobs and fishing routes.|Tanaris / Feralas - fishing Big-mouth Clams.", "Defaults use Wowhead Classic Big-mouth Clam container samples.")
-two("iridescent-pearl", "Iridescent Pearl", 5500, "big mouth clam,big-mouth clam,thick-shelled clam,clam pearl,pearl", 0.52, 0.0257, "Swamp of Sorrows - Marsh murlocs for Big-mouth Clams.|Azshara / Tanaris / Feralas - fish Big-mouth Clams.|Thousand Needles / Stranglethorn - lower-level clam alternatives.", "Defaults use Wowhead Classic container samples for Big-mouth Clams.")
+local function two(key, name, itemId, aliases, stage1Chance, stage2Chance, locations, note)
+    twoClam(key, name, itemId, aliases, 7973, "Big-mouth Clam", "Big-mouth Clams", stage1Chance, stage2Chance, 40, 60, locations, note)
+end
+
+twoClam("iridescent-pearl-thick", "Iridescent Pearl - Thick-shelled Clam", 5500, "iridescent pearl,thick-shelled clam,thick shelled clam,clam pearl,pearl,wetlands,hillsbrad,bluegill,snapjaw", 5524, "Thick-shelled Clam", "Thick clams", 0.42, 0.0257, 20, 32, "Wetlands - Bluegill Marsh murlocs north of Menethil Harbor; a strong fit around level 24-31.|Hillsbrad Foothills / Alterac edge - Snapjaw turtle shoreline near Dalaran and Lordamere.|Stranglethorn Vale - Vile Reef murlocs if you can handle underwater pulls.", "Level-aware Iridescent Pearl default for lower characters. Wowhead Classic points Iridescent Pearl and Thick-shelled Clams toward Wetlands or Hillsbrad murloc farms; Wowpedia notes Thick-shelled Clams from many level 20-32 beasts and humanoids.")
+twoClam("small-lustrous-pearl-small", "Small Lustrous Pearl - Small Barnacled Clam", 5498, "small lustrous pearl,small barnacled clam,clam pearl,pearl,darkshore,bfd", 5523, "Small Barnacled Clam", "Small clams", 0.42, 0.055, 10, 24, "Darkshore - Ruins of Mathystra naga and nearby coast.|Blackfathom Deeps - naga and murloc-heavy clears.|The Barrens / Silverpine / Westfall coasts - low-level murloc and naga routes.", "Lower-level pearl route. Small Barnacled Clams are the relevant first stage; exact clam-per-kill rates vary heavily by mob.")
+twoClam("small-lustrous-pearl-thick", "Small Lustrous Pearl - Thick-shelled Clam", 5498, "small lustrous pearl,thick-shelled clam,thick shelled clam,clam pearl,pearl,wetlands,hillsbrad", 5524, "Thick-shelled Clam", "Thick clams", 0.42, 0.050, 20, 32, "Wetlands - Bluegill Marsh murlocs.|Hillsbrad / Alterac - Snapjaw turtle shoreline.|Blackfathom Deeps or Stranglethorn lower routes if they match your level.", "Useful when farming Iridescent Pearls because the same clams can produce Small Lustrous Pearls.")
+
+two("golden-pearl", "Golden Pearl - Big-mouth Clam", 13926, "gold pearl,golden pearl,big mouth clam,big-mouth clam,clam pearl,pearl", 0.52, 0.00509, "Swamp of Sorrows - Marsh murloc packs along the eastern coast.|Azshara - coastal naga and fishing routes for Big-mouth Clams.|Tanaris / Feralas / Hinterlands - fish Big-mouth Clams while moving between pools.", "Defaults use a high-clam mob route and Wowhead Classic container samples.")
+two("black-pearl", "Black Pearl - Big-mouth Clam", 7971, "black pearl,big mouth clam,big-mouth clam,clam pearl,pearl", 0.52, 0.0405, "Swamp of Sorrows - Marsh murlocs for high Big-mouth Clam volume.|Azshara - coastal mobs and fishing routes.|Tanaris / Feralas - fishing Big-mouth Clams.", "Defaults use Wowhead Classic Big-mouth Clam container samples.")
+two("iridescent-pearl", "Iridescent Pearl - Big-mouth Clam", 5500, "iridescent pearl,big mouth clam,big-mouth clam,clam pearl,pearl,azshara,tanaris", 0.52, 0.0300, "Swamp of Sorrows - Marsh murlocs for Big-mouth Clams.|Azshara / Tanaris / Feralas - fish Big-mouth Clams.|Hinterlands / Tanaris turtles and naga if you are in the 40+ band.", "Higher-level Iridescent Pearl route. At level 31, the Thick-shelled Clam route should sort ahead of this one.")
 
 add("arcane-crystal", "Arcane Crystal", 12363, "rich thorium,rtv,thorium,mining", "mining", "Mining taps", "+ Tap", "Crystals", 0.0295, "Crystals / tap", "Winterspring - Rich Thorium circuits.|Eastern Plaguelands - Pestilent Scar, Noxious Glade and cave loops.|Azshara / Burning Steppes / Un'Goro - Rich Thorium routes.", "Default uses Wowhead Classic Rich Thorium Vein mined-from samples.", "Mining")
 add("black-lotus", "Black Lotus", 13468, "lotus,herbalism,herb", "herbalism", "Lotus nodes", "+ Node", "Lotus", 1, "Lotus / node", "Burning Steppes - full zone circuit.|Silithus - perimeter and hive-adjacent routes.|Winterspring - Everlook and Frostsaber circuits.|Eastern Plaguelands - zone-wide herbing circuit.", "Spawn competition is not modeled; tracking is per Lotus node found.", "Herbalism,Herb Gathering", true)
