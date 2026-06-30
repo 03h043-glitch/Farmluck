@@ -1,0 +1,9 @@
+## Interface: 11508
+## Title: FarmLuckTracker
+## Notes: Minimal WoW Classic farming tracker with luck-aware metrics.
+## Author: Codex
+## Version: 0.1.0
+## SavedVariables: FarmLuckTrackerDB
+
+Data.lua
+Core.lua
